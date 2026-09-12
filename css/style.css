@@ -1,0 +1,226 @@
+:root {
+  --bg: #fff7e6;
+  --floor: #e8d5b5;
+  --accent: #ff8a65;
+  --shadow: rgba(0, 0, 0, 0.15);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: system-ui, sans-serif;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screen[hidden] { display: none; }
+
+/* profile */
+#screen-profile { gap: 8vw; }
+
+.profile-btn {
+  width: 32vw;
+  height: 32vw;
+  max-width: 320px;
+  max-height: 320px;
+  border: none;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 8px 0 var(--shadow);
+  padding: 4%;
+}
+
+.profile-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 var(--shadow); }
+
+.profile-btn svg { width: 100%; height: 100%; }
+
+.gear {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  opacity: 0.3;
+}
+
+.gear::before { content: '⚙'; font-size: 24px; }
+
+/* game */
+#stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(var(--bg) 0 60%, var(--floor) 60% 100%);
+}
+
+#char {
+  position: absolute;
+  left: 50%;
+  top: 8vh;
+  width: 30vh;
+  height: 52vh;
+  transform: translateX(-50%);
+}
+
+#char svg { width: 100%; height: 100%; }
+
+.foot {
+  position: absolute;
+  top: 58vh;
+  width: 12vh;
+  height: 18vh;
+  border-radius: 40% 40% 30% 30%;
+  border: 3px dashed rgba(0, 0, 0, 0.15);
+}
+
+.foot[data-foot="left"]  { left: calc(50% - 13vh); }
+.foot[data-foot="right"] { left: calc(50% + 1vh); }
+
+.foot.worn { border-color: transparent; }
+
+.shoe {
+  position: absolute;
+  width: 14vh;
+  height: 20vh;
+  touch-action: none;
+  filter: drop-shadow(0 4px 4px var(--shadow));
+  transition: transform 0.3s, left 0.3s, top 0.3s;
+}
+
+.shoe.dragging { transition: none; z-index: 10; transform: scale(1.1); }
+
+.shoe svg { width: 100%; height: 100%; }
+
+.shoe.wrong-left  { transform: rotate(-25deg); }
+.shoe.wrong-right { transform: rotate(25deg); }
+
+.shoe.guide { animation: blink 0.6s infinite alternate; }
+
+@keyframes blink { from { filter: brightness(1); } to { filter: brightness(1.6) drop-shadow(0 0 12px gold); } }
+
+#char.happy { animation: jump 0.5s 2; }
+
+@keyframes jump {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6vh); }
+}
+
+#char.confused { animation: stomp 0.3s 3; }
+
+@keyframes stomp {
+  0%, 100% { transform: translateX(-50%) rotate(0); }
+  50% { transform: translateX(-50%) rotate(3deg); }
+}
+
+.corner-btn {
+  position: fixed;
+  top: 12px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 0 var(--shadow);
+  padding: 8px;
+}
+
+.corner-btn svg { width: 100%; height: 100%; }
+
+.corner-left { left: 12px; }
+.corner-right { right: 12px; }
+
+#progress {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+#progress span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+#progress span.on { background: var(--accent); }
+
+/* collection */
+#screen-collection { flex-direction: column; }
+
+#collection-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3vh;
+  width: 80vw;
+}
+
+.item {
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 16px;
+  padding: 8%;
+}
+
+.item svg { width: 100%; height: 100%; }
+
+.item.locked svg { filter: brightness(0) opacity(0.15); }
+
+.item.unlocked:active svg { animation: wiggle 0.6s; }
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg) scale(1.15); }
+  75% { transform: rotate(10deg) scale(1.15); }
+}
+
+/* settings */
+#screen-settings { flex-direction: column; gap: 24px; font-size: 20px; }
+
+#screen-settings input, #screen-settings select { font-size: 20px; width: 6em; }
+
+#screen-settings button { font-size: 20px; padding: 12px 24px; }
+
+/* overlay (unlock / sleep) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay[hidden] { display: none; }
+
+.overlay svg { width: 50vh; height: 50vh; animation: pop 0.6s; }
+
+@keyframes pop {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* character faces: exactly one visible */
+#char .face { display: none; }
+#char:not(.happy):not(.confused):not(.sleep) .face-normal { display: block; }
+#char.happy .face-happy { display: block; }
+#char.confused .face-confused { display: block; }
+#char.sleep .face-sleep { display: block; }
