@@ -1,5 +1,5 @@
 import { makeRound, isCorrect, isNewUnlock, unlockedCount, UNLOCK_EVERY, shouldGuide } from './logic.js';
-import { SHOE_SETS } from './art/shoes.js';
+import { pickShoeSet } from './art/shoes.js';
 import { CHARS } from './art/chars.js';
 import { ITEMS } from './art/items.js';
 import { playPick, playCorrect, playWrong, playUnlock, playSleep } from './audio.js';
@@ -32,7 +32,7 @@ function newRound(app) {
   stage.querySelectorAll('.foot').forEach((el) => { el.classList.remove('worn'); delete el.dataset.shoe; });
   document.getElementById('char').className = '';
 
-  const set = SHOE_SETS[app.state.settings.shoeSet] || SHOE_SETS.default;
+  const set = pickShoeSet(app.profile, app.state.profiles[app.profile].shoeSet);
   const { floor } = makeRound();
   floor.forEach((side, i) => {
     const slot = i === 0 ? 'left' : 'right';

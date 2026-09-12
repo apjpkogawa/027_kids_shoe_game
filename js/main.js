@@ -1,7 +1,7 @@
 import { loadState, saveState, resetState, todayString } from './storage.js';
 import { PROFILE_ICONS } from './art/items.js';
 import { UI_ICONS } from './art/chars.js';
-import { SHOE_SETS } from './art/shoes.js';
+import { SHOE_SETS, PROFILE_SHOES } from './art/shoes.js';
 import { startGame } from './game.js';
 import { renderCollection } from './collection.js';
 
@@ -37,11 +37,14 @@ function setupProfileScreen() {
 
 function openSettings() {
   const limit = document.getElementById('daily-limit');
-  const select = document.getElementById('shoe-set');
   limit.value = app.state.settings.dailyLimit;
-  select.innerHTML = Object.entries(SHOE_SETS)
-    .map(([id, set]) => `<option value="${id}">${set.label}</option>`).join('');
-  select.value = app.state.settings.shoeSet in SHOE_SETS ? app.state.settings.shoeSet : 'default';
+  document.querySelectorAll('.shoe-set').forEach((select) => {
+    const profile = select.dataset.profile;
+    select.innerHTML = '<option value="all">ぜんぶ（ランダム）</option>' + PROFILE_SHOES[profile]
+      .map((id) => `<option value="${id}">${SHOE_SETS[id].label}</option>`).join('');
+    const current = app.state.profiles[profile].shoeSet;
+    select.value = PROFILE_SHOES[profile].includes(current) ? current : 'all';
+  });
   app.show('screen-settings');
 }
 
@@ -51,7 +54,9 @@ function setupSettingsScreen() {
     if (Number.isInteger(limit) && limit >= 1 && limit <= 50) {
       app.state.settings.dailyLimit = limit;
     }
-    app.state.settings.shoeSet = document.getElementById('shoe-set').value;
+    document.querySelectorAll('.shoe-set').forEach((select) => {
+      app.state.profiles[select.dataset.profile].shoeSet = select.value;
+    });
     app.save();
     app.show('screen-profile');
   });

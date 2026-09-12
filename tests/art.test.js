@@ -1,16 +1,30 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SHOE_SETS } from '../js/art/shoes.js';
+import { SHOE_SETS, PROFILE_SHOES, pickShoeSet } from '../js/art/shoes.js';
 import { ITEMS, PROFILE_ICONS } from '../js/art/items.js';
 import { CHARS, UI_ICONS } from '../js/art/chars.js';
 
 const isSvg = (s) => typeof s === 'string' && s.trim().startsWith('<svg') && s.trim().endsWith('</svg>');
 
-test('default shoe set has left and right svg', () => {
-  assert.ok(SHOE_SETS.default);
-  assert.ok(isSvg(SHOE_SETS.default.left));
-  assert.ok(isSvg(SHOE_SETS.default.right));
-  assert.notEqual(SHOE_SETS.default.left, SHOE_SETS.default.right);
+test('every shoe set has distinct left and right svg', () => {
+  for (const [id, set] of Object.entries(SHOE_SETS)) {
+    assert.ok(isSvg(set.left), id);
+    assert.ok(isSvg(set.right), id);
+    assert.notEqual(set.left, set.right, id);
+  }
+});
+
+test('each profile lists only existing shoe sets', () => {
+  for (const profile of ['bug', 'dress']) {
+    assert.ok(PROFILE_SHOES[profile].length >= 1);
+    PROFILE_SHOES[profile].forEach((id) => assert.ok(SHOE_SETS[id], id));
+  }
+});
+
+test('pickShoeSet uses the chosen set or a random one from the profile', () => {
+  assert.equal(pickShoeSet('bug', 'yellow-mesh'), SHOE_SETS['yellow-mesh']);
+  assert.equal(pickShoeSet('bug', 'all', () => 0), SHOE_SETS[PROFILE_SHOES.bug[0]]);
+  assert.equal(pickShoeSet('bug', 'anpan-pink', () => 0.99), SHOE_SETS[PROFILE_SHOES.bug.at(-1)]);
 });
 
 test('each profile has 10 items with unique ids', () => {

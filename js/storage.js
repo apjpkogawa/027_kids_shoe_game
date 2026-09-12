@@ -10,8 +10,8 @@ export function todayString(date = new Date()) {
 
 export function defaultState(today) {
   return {
-    profiles: { bug: { correct: 0 }, dress: { correct: 0 } },
-    settings: { dailyLimit: DEFAULT_DAILY_LIMIT, shoeSet: 'default' },
+    profiles: { bug: { correct: 0, shoeSet: 'all' }, dress: { correct: 0, shoeSet: 'all' } },
+    settings: { dailyLimit: DEFAULT_DAILY_LIMIT },
     today: { date: today, rounds: 0 },
   };
 }

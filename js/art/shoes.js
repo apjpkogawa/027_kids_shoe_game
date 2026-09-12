@@ -52,9 +52,6 @@ function shoeSet(label, colors) {
 }
 
 export const SHOE_SETS = {
-  default: shoeSet('あお スニーカー', {
-    body: '#42a5f5', toe: '#1e5fa8', sole: '#1e5fa8', strap: '#42a5f5', stripe: '#fff', tab: '#fff',
-  }),
   'green-mesh': shoeSet('みどり うわばき', {
     body: '#f6f5ee', mesh: '#d9d7c8', toe: '#1b8a3a', sole: '#e8e8e0', strap: '#f6f5ee', stripe: '#1b8a3a', tab: '#f6f5ee',
   }),
@@ -74,3 +71,18 @@ export const SHOE_SETS = {
     body: '#f3b3cf', mesh: '#e8d6b0', toe: '#f3b3cf', sole: '#f2e8e0', strap: '#f3b3cf', stripe: '#fff', tab: '#f3b3cf', box: '#f3d9a0',
   }),
 };
+
+// Which shoe sets belong to which child profile.
+export const PROFILE_SHOES = {
+  bug: ['anpan-blue', 'yellow-mesh', 'nb-sage'],
+  dress: ['anpan-pink', 'green-mesh', 'nb-pink'],
+};
+
+// Pick the shoe set for a round: a fixed id, or a random one from the profile.
+export function pickShoeSet(profile, setting, random = Math.random) {
+  const ids = PROFILE_SHOES[profile];
+  const id = setting in SHOE_SETS && ids.includes(setting)
+    ? setting
+    : ids[Math.floor(random() * ids.length)];
+  return SHOE_SETS[id];
+}
