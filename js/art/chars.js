@@ -1,26 +1,21 @@
-// Character with four face groups; CSS shows exactly one at a time.
+// Character seen from BEHIND, so the child sees the same orientation as
+// their own feet (left foot on the left, toes pointing away). Reactions are
+// shown above the head; CSS shows exactly one "face" group at a time.
 function charSvg({ shirt, hair }) {
   return `<svg viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="50" cy="34" r="26" fill="${hair}"/>
-  <circle cx="50" cy="40" r="22" fill="#ffe0b2"/>
-  <g class="face face-normal">
-    <circle cx="42" cy="38" r="3" fill="#222"/><circle cx="58" cy="38" r="3" fill="#222"/>
-    <path d="M44 50 Q50 54 56 50" stroke="#222" stroke-width="2" fill="none"/>
-  </g>
+  <g class="face face-normal"></g>
   <g class="face face-happy">
-    <path d="M38 38 Q42 33 46 38 M54 38 Q58 33 62 38" stroke="#222" stroke-width="2" fill="none"/>
-    <path d="M40 48 Q50 60 60 48 Z" fill="#e57373"/>
+    <path d="M22 18 L26 8 L30 18 Z M70 18 L74 8 L78 18 Z" fill="#ffb300"/>
+    <text x="40" y="14" font-size="16" font-weight="bold" fill="#e53935">♪</text>
   </g>
   <g class="face face-confused">
-    <circle cx="42" cy="38" r="3" fill="#222"/><circle cx="58" cy="38" r="3" fill="#222"/>
-    <path d="M44 52 Q50 48 56 52" stroke="#222" stroke-width="2" fill="none"/>
-    <text x="70" y="24" font-size="18" font-weight="bold" fill="#1565c0">?</text>
+    <text x="42" y="16" font-size="22" font-weight="bold" fill="#1565c0">?</text>
   </g>
   <g class="face face-sleep">
-    <path d="M38 38 Q42 41 46 38 M54 38 Q58 41 62 38" stroke="#222" stroke-width="2" fill="none"/>
-    <path d="M44 51 Q50 54 56 51" stroke="#222" stroke-width="2" fill="none"/>
-    <text x="68" y="20" font-size="14" fill="#555">z z</text>
+    <text x="60" y="16" font-size="14" fill="#555">z z</text>
   </g>
+  <circle cx="50" cy="40" r="22" fill="#ffe0b2"/>
+  <circle cx="50" cy="36" r="24" fill="${hair}"/>
   <path d="M28 66 L72 66 L78 120 L22 120 Z" fill="${shirt}"/>
   <path d="M28 66 L12 100 M72 66 L88 100" stroke="#ffe0b2" stroke-width="10" stroke-linecap="round"/>
   <rect x="30" y="118" width="16" height="52" rx="8" fill="#ffe0b2"/>
