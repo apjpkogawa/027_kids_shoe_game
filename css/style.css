@@ -89,8 +89,9 @@ html, body {
   border: 3px dashed rgba(0, 0, 0, 0.15);
 }
 
-.foot[data-foot="left"]  { left: calc(50% - 13vh); }
-.foot[data-foot="right"] { left: calc(50% + 1vh); }
+/* The character faces the viewer, so its left foot is on the viewer's right. */
+.foot[data-foot="left"]  { left: calc(50% + 1vh); }
+.foot[data-foot="right"] { left: calc(50% - 13vh); }
 
 .foot.worn { border-color: transparent; }
 

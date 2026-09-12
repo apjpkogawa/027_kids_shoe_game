@@ -1,9 +1,13 @@
-// Top-down shoe, toe up. The left shoe is drawn; the right shoe is a mirror.
+// Shoe seen from the front of the character: toe points DOWN (toward the
+// viewer), heel opening at the top next to the leg. The left shoe is drawn
+// toe-up and rotated 180; the right shoe is its mirror.
 // Inner (arch) edge carries half a ladybug so a correctly paired L+R forms
 // one whole bug. The velcro tab (and light box, if any) sits on the OUTER
 // edge, matching the real shoes.
 function shoeSvg({ body, toe, sole, strap, stripe, tab, box, mesh, mirror }) {
-  const transform = mirror ? 'transform="translate(100 0) scale(-1 1)"' : '';
+  const transform = mirror
+    ? 'transform="rotate(180 50 70) translate(100 0) scale(-1 1)"'
+    : 'transform="rotate(180 50 70)"';
   const meshDots = mesh
     ? `<pattern id="mesh-${mesh.replace('#', '')}" width="6" height="6" patternUnits="userSpaceOnUse">
          <circle cx="3" cy="3" r="1.2" fill="${mesh}"/>
