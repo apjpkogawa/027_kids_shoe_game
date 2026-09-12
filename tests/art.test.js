@@ -2,15 +2,19 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SHOE_SETS, PROFILE_SHOES, pickShoeSet } from '../js/art/shoes.js';
 import { ITEMS, PROFILE_ICONS } from '../js/art/items.js';
-import { CHARS, UI_ICONS } from '../js/art/chars.js';
+import { CHARS, FEET, UI_ICONS } from '../js/art/chars.js';
 
 const isSvg = (s) => typeof s === 'string' && s.trim().startsWith('<svg') && s.trim().endsWith('</svg>');
 
-test('every shoe set has distinct left and right svg', () => {
+test('every shoe set has distinct left and right svg with both strap states', () => {
   for (const [id, set] of Object.entries(SHOE_SETS)) {
     assert.ok(isSvg(set.left), id);
     assert.ok(isSvg(set.right), id);
     assert.notEqual(set.left, set.right, id);
+    for (const svg of [set.left, set.right]) {
+      assert.ok(svg.includes('class="strap-tab"'), id);
+      assert.ok(svg.includes('class="strap-closed"'), id);
+    }
   }
 });
 
@@ -46,5 +50,7 @@ test('characters expose four face groups', () => {
       assert.ok(svg.includes(`class="face ${face}"`), `${profile} ${face}`);
     }
   }
-  ['home', 'book', 'back'].forEach((k) => assert.ok(isSvg(UI_ICONS[k])));
+  ['home', 'book', 'back', 'lock', 'gear'].forEach((k) => assert.ok(isSvg(UI_ICONS[k])));
+  assert.ok(isSvg(FEET.left));
+  assert.ok(isSvg(FEET.right));
 });

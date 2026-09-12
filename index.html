@@ -2,47 +2,65 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#eef4f8">
   <link rel="manifest" href="manifest.json">
   <title>くつ</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <section id="screen-profile" class="screen">
-    <button class="profile-btn" data-profile="bug" aria-label="bug"></button>
-    <button class="profile-btn" data-profile="dress" aria-label="dress"></button>
+    <div class="profile-pair">
+      <button class="profile-btn profile-bug" data-profile="bug" aria-label="bug"></button>
+      <button class="profile-btn profile-dress" data-profile="dress" aria-label="dress"></button>
+    </div>
     <button id="gear" class="gear" aria-label="settings"></button>
   </section>
 
   <section id="screen-game" class="screen" hidden>
     <div id="stage">
+      <div class="wall"></div>
+      <div class="floor"><div class="mat"></div></div>
       <div id="char"></div>
       <div class="foot" data-foot="left"></div>
       <div class="foot" data-foot="right"></div>
     </div>
-    <button id="btn-collection" class="corner-btn corner-right" aria-label="collection"></button>
-    <button id="btn-home" class="corner-btn corner-left" aria-label="home"></button>
-    <div id="progress"></div>
+    <button id="btn-home" class="round-btn corner-left" aria-label="home"></button>
+    <button id="btn-collection" class="round-btn corner-right" aria-label="collection"></button>
+    <div id="progress" class="progress"></div>
   </section>
 
   <section id="screen-collection" class="screen" hidden>
-    <div id="collection-grid"></div>
-    <button id="btn-back" class="corner-btn corner-left" aria-label="back"></button>
+    <div id="collection-grid" class="collection-grid"></div>
+    <button id="btn-back" class="round-btn corner-left" aria-label="back"></button>
   </section>
 
-  <section id="screen-settings" class="screen" hidden>
-    <h1>おうちのひと設定</h1>
-    <label>1日のラウンド数 <input id="daily-limit" type="number" min="1" max="50"></label>
-    <label>くつ（むし） <select class="shoe-set" data-profile="bug"></select></label>
-    <label>くつ（ドレス） <select class="shoe-set" data-profile="dress"></select></label>
-    <button id="btn-reset">データを全部消す</button>
-    <button id="btn-settings-close">閉じる</button>
-  </section>
+  <dialog id="settings" class="sheet">
+    <form method="dialog" class="sheet-body">
+      <h1>おうちのひと設定</h1>
+      <label class="field">
+        <span>1日のラウンド数</span>
+        <input id="daily-limit" type="number" min="1" max="50" inputmode="numeric">
+      </label>
+      <label class="field">
+        <span>くつ（むし）</span>
+        <select class="shoe-set" data-profile="bug"></select>
+      </label>
+      <label class="field">
+        <span>くつ（ドレス）</span>
+        <select class="shoe-set" data-profile="dress"></select>
+      </label>
+      <div class="sheet-actions">
+        <button type="button" id="btn-reset" class="btn btn-danger">データを全部消す</button>
+        <button type="submit" id="btn-settings-close" class="btn btn-primary">保存して閉じる</button>
+      </div>
+    </form>
+  </dialog>
 
-  <div id="overlay" class="overlay" hidden></div>
+  <div id="overlay" class="overlay" hidden><div class="overlay-art"></div><div class="confetti"></div></div>
 
   <script type="module" src="js/main.js"></script>
 </body>

@@ -27,6 +27,7 @@ function setupProfileScreen() {
 
   // Hidden parent settings: hold the gear for LONG_PRESS_MS.
   const gear = document.getElementById('gear');
+  gear.innerHTML = UI_ICONS.gear;
   let timer = null;
   gear.addEventListener('pointerdown', () => {
     timer = setTimeout(openSettings, LONG_PRESS_MS);
@@ -36,8 +37,7 @@ function setupProfileScreen() {
 }
 
 function openSettings() {
-  const limit = document.getElementById('daily-limit');
-  limit.value = app.state.settings.dailyLimit;
+  document.getElementById('daily-limit').value = app.state.settings.dailyLimit;
   document.querySelectorAll('.shoe-set').forEach((select) => {
     const profile = select.dataset.profile;
     select.innerHTML = '<option value="all">ぜんぶ（ランダム）</option>' + PROFILE_SHOES[profile]
@@ -45,11 +45,12 @@ function openSettings() {
     const current = app.state.profiles[profile].shoeSet;
     select.value = PROFILE_SHOES[profile].includes(current) ? current : 'all';
   });
-  app.show('screen-settings');
+  document.getElementById('settings').showModal();
 }
 
-function setupSettingsScreen() {
-  document.getElementById('btn-settings-close').addEventListener('click', () => {
+function setupSettingsSheet() {
+  const dialog = document.getElementById('settings');
+  dialog.querySelector('form').addEventListener('submit', () => {
     const limit = parseInt(document.getElementById('daily-limit').value, 10);
     if (Number.isInteger(limit) && limit >= 1 && limit <= 50) {
       app.state.settings.dailyLimit = limit;
@@ -58,14 +59,13 @@ function setupSettingsScreen() {
       app.state.profiles[select.dataset.profile].shoeSet = select.value;
     });
     app.save();
-    app.show('screen-profile');
   });
 
   document.getElementById('btn-reset').addEventListener('click', () => {
     if (!confirm('データを全部消しますか？')) return;
     resetState(localStorage);
     app.state = loadState(localStorage, todayString());
-    app.show('screen-profile');
+    dialog.close();
   });
 }
 
@@ -80,6 +80,6 @@ function setupNavButtons() {
 }
 
 setupProfileScreen();
-setupSettingsScreen();
+setupSettingsSheet();
 setupNavButtons();
 app.show('screen-profile');
