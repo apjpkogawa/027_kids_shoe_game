@@ -224,3 +224,7 @@ html, body {
 #char.happy .face-happy { display: block; }
 #char.confused .face-confused { display: block; }
 #char.sleep .face-sleep { display: block; }
+
+/* overlay character (sleep) shows only the sleeping face */
+.overlay .face { display: none; }
+.overlay .face-sleep { display: block; }
