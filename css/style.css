@@ -173,8 +173,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .shoe {
   position: absolute;
-  width: 26vh;
-  height: 27.6vh;
+  width: 32vh;
+  height: 30.4vh;
   z-index: var(--z-shoe);
   touch-action: none;
   filter: drop-shadow(0 6px 6px oklch(30% 0.05 250 / 0.22));
@@ -183,10 +183,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .shoe svg { width: 100%; height: 100%; overflow: visible; }
 
+/* Only the painted drawing is grabbable, so overlapping shoe boxes never
+   block each other's straps. */
+.shoe { pointer-events: none; }
+.shoe svg * { pointer-events: visiblePainted; }
+
 .shoe.dragging { transition: none; z-index: var(--z-drag); transform: scale(1.08); filter: drop-shadow(0 14px 14px oklch(30% 0.05 250 / 0.28)); }
 
 /* strap states */
-.strap-tab { transform: rotate(var(--sway, 0deg)); transition: transform 180ms var(--ease-out); pointer-events: all; }
+.strap-tab { --rest: 75deg; transform: rotate(calc(var(--rest) + var(--sway, 0deg))); transition: transform 180ms var(--ease-out); pointer-events: all; }
 .shoe[data-strap="closed"] .strap-tab { display: none; }
 .shoe[data-strap="open"] .strap-closed { display: none; }
 .shoe.settling .strap-tab { animation: settle 700ms var(--ease-out); }
@@ -194,15 +199,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .shoe.tab-grab .strap-tab { transition: none; }
 
 @keyframes settle {
-  0% { transform: rotate(var(--sway, 0deg)); }
-  40% { transform: rotate(calc(var(--sway, 0deg) * -0.45)); }
-  70% { transform: rotate(calc(var(--sway, 0deg) * 0.18)); }
-  100% { transform: rotate(0deg); }
+  0% { transform: rotate(calc(var(--rest) + var(--sway, 0deg))); }
+  40% { transform: rotate(calc(var(--rest) + var(--sway, 0deg) * -0.45)); }
+  70% { transform: rotate(calc(var(--rest) + var(--sway, 0deg) * 0.18)); }
+  100% { transform: rotate(var(--rest)); }
 }
 
 @keyframes nudge {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-14deg); }
+  0%, 100% { transform: rotate(var(--rest)); }
+  50% { transform: rotate(calc(var(--rest) - 9deg)); }
 }
 
 .shoe.wrong-left  { transform: rotate(-22deg); }

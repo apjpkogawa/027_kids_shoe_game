@@ -1,5 +1,5 @@
 import { makeRound, isCorrect, isNewUnlock, unlockedCount, UNLOCK_EVERY, shouldGuide } from './logic.js';
-import { pickShoeSet, SHOE_VIEWBOX, STRAP_PIVOT } from './art/shoes.js';
+import { pickShoeSet, SHOE_VIEWBOX, STRAP_PIVOT, STRAP_OPEN_DEG } from './art/shoes.js';
 import { CHARS, LEGS, FEET } from './art/chars.js';
 import { ITEMS } from './art/items.js';
 import { playPick, playCorrect, playWrong, playUnlock, playSleep, playVelcro } from './audio.js';
@@ -10,10 +10,10 @@ const UNLOCK_SHOW_MS = 2600;
 const SLEEP_SHOW_MS = 3000;
 const SWAY_MAX_DEG = 38;
 const SWAY_PER_PX = 0.9;
-const CLOSE_ANGLE_DEG = 55;
+const CLOSE_ANGLE_DEG = 30;
 const CONFETTI_COUNT = 28;
 
-const FLOOR_POS = { left: { left: '13%', top: '8vh' }, right: { left: 'calc(87% - 26vh)', top: '8vh' } };
+const FLOOR_POS = { left: { left: '10%', top: '6vh' }, right: { left: 'calc(90% - 32vh)', top: '6vh' } };
 
 let misses = 0;
 // True while a result animation plays; shoes cannot be moved then.
@@ -79,7 +79,12 @@ function makeDraggable(el, app) {
 
   el.addEventListener('pointerdown', (e) => {
     if (roundLocked || el.dataset.strap === 'closed') return;
-    if (el.dataset.worn) unwear(el);
+    if (el.dataset.worn) {
+      // A worn shoe only comes off when the drawing itself is grabbed,
+      // not the transparent box around it.
+      if (!(e.target instanceof SVGElement) || e.target.tagName === 'svg') return;
+      unwear(el);
+    }
     el.setPointerCapture(e.pointerId);
     const rect = el.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
@@ -176,17 +181,23 @@ function makeStrapFastenable(el, app) {
 
   function pivotOnScreen() {
     const r = el.querySelector('svg').getBoundingClientRect();
-    const px = mirror ? SHOE_VIEWBOX.w - STRAP_PIVOT.x : STRAP_PIVOT.x;
-    return { x: r.left + (px / SHOE_VIEWBOX.w) * r.width, y: r.top + (STRAP_PIVOT.y / SHOE_VIEWBOX.h) * r.height };
+    // Mirrored shoes are drawn with translate(160) scale(-1), so x -> 160 - x.
+    const px = mirror ? 160 - STRAP_PIVOT.x : STRAP_PIVOT.x;
+    return {
+      x: r.left + ((px - SHOE_VIEWBOX.x0) / SHOE_VIEWBOX.w) * r.width,
+      y: r.top + ((STRAP_PIVOT.y - SHOE_VIEWBOX.y0) / SHOE_VIEWBOX.h) * r.height,
+    };
   }
 
-  // Angle of the pointer around the pivot, in the left-shoe's local frame
-  // (0 = pointing into the shoe, 180 = hanging outward).
-  function localAngle(e) {
+  // Strap rotation that makes it point at the pointer, in the left-shoe's
+  // local frame: 0 = lying closed toward the outer ring, STRAP_OPEN_DEG = at rest open.
+  function rotationToward(e) {
     const p = pivotOnScreen();
     const dx = (e.clientX - p.x) * (mirror ? -1 : 1);
     const dy = e.clientY - p.y;
-    return (Math.atan2(dy, dx) * 180) / Math.PI;
+    let rot = (Math.atan2(dy, dx) * 180) / Math.PI - 180;
+    if (rot <= -180) rot += 360;
+    return rot;
   }
 
   function canFasten() {
@@ -204,15 +215,13 @@ function makeStrapFastenable(el, app) {
 
   tab.addEventListener('pointermove', (e) => {
     if (!el.classList.contains('tab-grab')) return;
-    let rot = localAngle(e) - 180;
-    if (rot < -180) rot += 360;
-    el.style.setProperty('--sway', `${rot}deg`);
+    el.style.setProperty('--sway', `${rotationToward(e) - STRAP_OPEN_DEG}deg`);
   });
 
   function release(e) {
     if (!el.classList.contains('tab-grab')) return;
     el.classList.remove('tab-grab');
-    if (Math.abs(localAngle(e)) <= CLOSE_ANGLE_DEG) {
+    if (Math.abs(rotationToward(e)) <= CLOSE_ANGLE_DEG) {
       el.dataset.strap = 'closed';
       el.style.setProperty('--sway', '0deg');
       playVelcro();
