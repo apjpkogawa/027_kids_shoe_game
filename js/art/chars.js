@@ -45,6 +45,37 @@ export const CHARS = {
   dress: charSvg({ top: '#f27ba6', bottom: '#f27ba6', hair: '#5a3a24', skin: '#ffd9b3' }),
 };
 
+// First-person view: the child's own legs coming up from the bottom of the
+// screen. Reaction marks sit above the feet; CSS shows one "face" group.
+function legsSvg({ sock, skin }) {
+  return `<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+  <g class="face face-normal"></g>
+  <g class="face face-happy">
+    <path d="M40 40 L46 22 L52 40 Z" fill="#ffb300"/>
+    <path d="M148 40 L154 22 L160 40 Z" fill="#ffb300"/>
+    <circle cx="26" cy="54" r="5" fill="#ff7043"/>
+    <circle cx="174" cy="54" r="5" fill="#ff7043"/>
+    <text x="84" y="40" font-size="30" font-weight="700" fill="#ff5252" font-family="system-ui, sans-serif">♪</text>
+  </g>
+  <g class="face face-confused">
+    <text x="86" y="44" font-size="40" font-weight="700" fill="#1e63d6" font-family="system-ui, sans-serif">?</text>
+  </g>
+  <g class="face face-sleep">
+    <text x="120" y="40" font-size="22" fill="#6b7280" font-family="system-ui, sans-serif">z z</text>
+  </g>
+  <!-- legs, foreshortened, widening toward the viewer -->
+  <path d="M50 150 L36 320 L96 320 L88 150 Z" fill="${skin}"/>
+  <path d="M112 150 L104 320 L164 320 L150 150 Z" fill="${skin}"/>
+  <path d="M50 150 L48 176 Q69 184 88 176 L88 150 Z" fill="${sock}"/>
+  <path d="M112 150 L112 176 Q131 184 150 176 L150 150 Z" fill="${sock}"/>
+</svg>`;
+}
+
+export const LEGS = {
+  bug: legsSvg({ sock: '#fff', skin: '#ffd9b3' }),
+  dress: legsSvg({ sock: '#fff0f5', skin: '#ffd9b3' }),
+};
+
 // Bare foot / sock outline used as the drop target. Left foot drawn, right mirrored.
 function footSvg(mirror) {
   const t = mirror ? 'transform="translate(100 0) scale(-1 1)"' : '';

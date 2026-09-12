@@ -1,6 +1,6 @@
 import { makeRound, isCorrect, isNewUnlock, unlockedCount, UNLOCK_EVERY, shouldGuide } from './logic.js';
 import { pickShoeSet, SHOE_VIEWBOX, STRAP_PIVOT } from './art/shoes.js';
-import { CHARS, FEET } from './art/chars.js';
+import { CHARS, LEGS, FEET } from './art/chars.js';
 import { ITEMS } from './art/items.js';
 import { playPick, playCorrect, playWrong, playUnlock, playSleep, playVelcro } from './audio.js';
 
@@ -13,15 +13,17 @@ const SWAY_PER_PX = 0.9;
 const CLOSE_ANGLE_DEG = 55;
 const CONFETTI_COUNT = 28;
 
-const FLOOR_POS = { left: { left: '8%', top: '60vh' }, right: { left: 'calc(92% - 26vh)', top: '60vh' } };
+const FLOOR_POS = { left: { left: '13%', top: '8vh' }, right: { left: 'calc(87% - 26vh)', top: '8vh' } };
 
 let misses = 0;
+// True while a result animation plays; shoes cannot be moved then.
+let roundLocked = false;
 
 export function startGame(app) {
   app.show('screen-game');
   misses = 0;
   const char = document.getElementById('char');
-  char.innerHTML = CHARS[app.profile];
+  char.innerHTML = LEGS[app.profile];
   char.className = '';
   document.querySelectorAll('.foot').forEach((f) => { f.innerHTML = FEET[f.dataset.foot]; });
   if (app.state.today.rounds >= app.state.settings.dailyLimit) {
@@ -35,6 +37,7 @@ function newRound(app) {
   const stage = document.getElementById('stage');
   stage.querySelectorAll('.shoe').forEach((el) => el.remove());
   resetFeet();
+  roundLocked = false;
   document.getElementById('char').className = '';
 
   const set = pickShoeSet(app.profile, app.state.profiles[app.profile].shoeSet);
@@ -75,7 +78,8 @@ function makeDraggable(el, app) {
   let lastX = 0;
 
   el.addEventListener('pointerdown', (e) => {
-    if (el.dataset.worn) return;
+    if (roundLocked || el.dataset.strap === 'closed') return;
+    if (el.dataset.worn) unwear(el);
     el.setPointerCapture(e.pointerId);
     const rect = el.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
@@ -133,12 +137,20 @@ function footUnder(x, y) {
   }) || null;
 }
 
+// Take a worn (but not yet fastened) shoe off its foot again.
+function unwear(shoe) {
+  const foot = document.querySelector(`.foot[data-shoe="${shoe.dataset.side}"]`);
+  if (foot) { foot.classList.remove('worn'); delete foot.dataset.shoe; }
+  delete shoe.dataset.worn;
+  document.querySelectorAll('.shoe').forEach((s) => s.classList.remove('tab-hint'));
+}
+
 function wear(shoe, foot) {
   const r = foot.getBoundingClientRect();
   const stage = document.getElementById('stage').getBoundingClientRect();
   const s = shoe.getBoundingClientRect();
   shoe.style.left = `${r.left - stage.left + r.width / 2 - s.width / 2}px`;
-  shoe.style.top = `${r.top - stage.top + r.height / 2 - s.height / 2 - r.height * 0.12}px`;
+  shoe.style.top = `${r.top - stage.top + r.height / 2 - s.height / 2 - r.height * 0.06}px`;
   shoe.dataset.worn = '1';
   foot.dataset.shoe = shoe.dataset.side;
   foot.classList.add('worn');
@@ -218,6 +230,7 @@ function makeStrapFastenable(el, app) {
 
 function onCorrect(app) {
   misses = 0;
+  roundLocked = true;
   document.querySelectorAll('.shoe').forEach((s) => s.classList.remove('guide'));
   document.getElementById('char').className = 'happy';
   playCorrect();
@@ -250,6 +263,7 @@ function onCorrect(app) {
 
 function onWrong(app) {
   misses += 1;
+  roundLocked = true;
   playWrong();
   document.getElementById('char').className = 'confused';
   // Swapped shoes: toes splay outward and the loose tabs point at each other.
@@ -261,6 +275,7 @@ function onWrong(app) {
   setTimeout(() => {
     document.getElementById('char').className = '';
     resetFeet();
+    roundLocked = false;
     document.querySelectorAll('.shoe').forEach((s) => placeOnFloor(s));
     if (shouldGuide(misses)) {
       document.querySelectorAll('.shoe').forEach((s) => s.classList.add('guide'));
