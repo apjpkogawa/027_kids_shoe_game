@@ -1,0 +1,10 @@
+{
+  "name": "kutsu",
+  "short_name": "kutsu",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#fff7e6",
+  "theme_color": "#ff8a65",
+  "icons": []
+}
